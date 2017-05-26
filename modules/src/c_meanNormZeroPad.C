@@ -130,10 +130,11 @@ void priv_meanNormZeroPad(boost::python::numeric::array& numpyarray,
         ysize+= d.max*d.branches.size();
 
 
+
     TStopwatch stopw;
 
     //all branches are floats!
-    TTree* tree=(TTree*)tfile->Get("deepntuplizer/tree");
+    TTree* tree=(TTree*)tfile->Get("jets");
 
     for(auto& d:datacollection)
         d.setup(tree);
@@ -236,7 +237,7 @@ void particle_binner(
 	counter.createFrom({counter_branch}, {1.}, {0.}, 1);
 
 	TFile* tfile= new TFile(filename.c_str(), "READ");
-	TTree* tree = (TTree*) tfile->Get("deepntuplizer/tree");
+	TTree* tree = (TTree*) tfile->Get("jets");
 
 	//connect all branches
 	branches.setup(tree);
@@ -375,7 +376,7 @@ void fillDensityMap(boost::python::numeric::array numpyarray,
     counter.createFrom({counter_branch}, {1.}, {0.}, 1);
 
     TFile* tfile= new TFile(filename.c_str(), "READ");
-    TTree* tree = (TTree*) tfile->Get("deepntuplizer/tree");
+    TTree* tree = (TTree*) tfile->Get("jets");
 
     //connect all branches
     branch.setup(tree);

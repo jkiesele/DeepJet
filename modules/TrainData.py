@@ -412,6 +412,7 @@ class TrainData(object):
             fileTimeOut(filenames,120) #give eos a minute to recover
             rfile = ROOT.TFile(filenames)
             tree = rfile.Get("jets")
+            ###
             if not self.nsamples:
                 self.nsamples=tree.GetEntries()
             nparray = tree2array(tree, stop=limit, branches=branches)
@@ -444,7 +445,7 @@ class TrainData(object):
         if self.remove or self.weight:
             weighter.setBinningAndClasses(
                 [weight_binXPt,weight_binYEta],
-                "jet_pt","jet_eta",
+                "rawpt","eta",
                 self.truthclasses
                 )
         return weighter
@@ -452,7 +453,7 @@ class TrainData(object):
        
     def produceBinWeighter(self,filenames):
         weighter = self.make_empty_weighter()
-        branches = ["jet_pt","jet_eta"]
+        branches = ["rawpt","eta"]
         branches.extend(self.truthclasses)
         if self.remove or self.weight:
             for fname in filenames:

@@ -4,7 +4,7 @@ Created on 21 Feb 2017
 @author: jkiesele
 '''
 from TrainData import TrainData_Flavour, TrainData_simpleTruth
-
+from TrainData import TrainData,fileTimeOut
 
 
 class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
@@ -22,16 +22,17 @@ class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
         #unusual addtions because of reduced truth
         self.undefTruth=['isUnmatched']
         
-        self.truthclasses=['isB','iC','isUDSG','isUnmatched']
+        self.truthclasses=['isB','isC','isUDSG','isUnmatched']
         
         self.allbranchestoberead=[]
         self.registerBranches(self.undefTruth)
         self.registerBranches(self.truthclasses)
-        self.registerBranches(['jet_pt','jet_eta'])
+        self.registerBranches(['rawpt','eta'])
         
         
         
-        self.addBranches(['jet_pt', 'jet_eta','ntk','hibin','trackSumJetDeltaR',
+        self.addBranches(['rawpt', 'eta',#'ntk','hibin',
+                          'trackSumJetDeltaR',
                           'trackSip2dSigAboveCharm','trackSip3dSigAboveCharm',
                           'trackSip2dValAboveCharm','trackSip3dValAboveCharm'])
        
@@ -40,7 +41,7 @@ class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
                           'tkip2d',
                           'tkip2dsig',
                           'tkip3d',
-                          'tkipd3dsig',
+                          'tkip3dsig',
                           'tkipdist2j',
                           'tkptratio',
                           'tkpparratio'],
@@ -51,7 +52,7 @@ class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
         
 
         self.addBranches(['svm', 
-                              'svntrk', 
+                              #'svntrk', 
                               'svdl',
                               'svdls',
                               'svdl2d', 
@@ -61,13 +62,22 @@ class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
                               'svdr2jet', 
                               'svptrel',  
                               'svtksumchi2',  
-                              'svcharge',  
+                              #'svcharge',  
                               'svptrel',  
-                              'svtkincone',  
+                              #'svtkincone',  
                               'svmcorr'],
                              1)
 
-
+    def reduceTruth(self, tuple_in):
+        import numpy
+        self.reducedtruthclasses=['isB','isC','isUDSG']
+        if tuple_in is not None:
+            b = tuple_in['isB'].view(numpy.ndarray)
+            c = tuple_in['isC'].view(numpy.ndarray)
+            l = tuple_in['isUDSG'].view(numpy.ndarray)
+            
+            return numpy.vstack((b,c,l)).transpose()  
+        
         
     def readFromRootFile(self,filename,TupleMeanStd, weighter):
         from preprocessing import MeanNormApply, MeanNormZeroPad, MeanNormZeroPadParticles
@@ -113,7 +123,7 @@ class TrainData_HIN(TrainData_Flavour, TrainData_simpleTruth):
         
         if self.remove:
             notremoves=weighter.createNotRemoveIndices(Tuple)
-            undef=Tuple['isUndefined']
+            undef=Tuple['isUnmatched']
             notremoves-=undef
             print('took ', sw.getAndReset(), ' to create remove indices')
         
